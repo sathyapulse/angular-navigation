@@ -449,10 +449,11 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 						onResize();
 					});
 
-					scope.moveSlider = function(slideIndex) {
+					scope.moveSlider = function(animatingTo) {
 						var origMar,
 							newMar,
 							oldSlideIndex,
+							animationIndex,
 							eleWidth = element.parent()[0].getBoundingClientRect().width;
 
 						origMar = parseInt(element.css('margin-left'));
@@ -461,16 +462,16 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 							return;
 						}
 
-						if(currentSlide == noOfSlides -1 && (slideIndex >= noOfSlides -1)) {
+						if(currentSlide == noOfSlides -1 && (animatingTo >= noOfSlides -1)) {
 							shakePage();
 							return;
 						}
-						else if(currentSlide == 0 && (slideIndex <= 0)) {
+						else if(currentSlide == 0 && (animatingTo <= 0)) {
 							shakePage();
 							return;
 						}
 						oldSlideIndex = currentSlide;
-						currentSlide = slideIndex;
+						currentSlide = animatingTo;
 
 						newMar = -1 * currentSlide * eleWidth;
 						navSlides.removeClass(classList.activeClass);
@@ -483,8 +484,15 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 								scope.intNavigationControl.onBefore();
 							}
 
-							var randNumber = getRandomNumber(0, 67);
-							var animationClass = getAnimationClass(randNumber);
+							if(oldSlideIndex < animatingTo) {
+								animationIndex = 13;
+							}
+							else {
+								animationIndex = 14;
+							}
+
+							// var randNumber = getRandomNumber(0, 67);
+							var animationClass = getAnimationClass(animationIndex);
 
 							navSlides.eq(oldSlideIndex).addClass(animationClass.outClass).on(animEndEventName, function(){
 								navSlides.eq(oldSlideIndex).off(animEndEventName).removeClass(animationClass.outClass);
