@@ -6,7 +6,8 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 		scope: {
 			initOnLoad: '=',
 			flipperData: '=',
-			navigationControl: '='
+			navigationControl: '=',
+			startAt: '='
 		},
 		link: function(scope, element, attributes) {
 			var isInitialized,
@@ -383,11 +384,14 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 				element.parent().css({
 					'height': navSlides.eq(currentSlide)[0].offsetHeight + 'px'
 				});
+				if(angular.isDefined(scope.intNavigationControl) && angular.isDefined(scope.intNavigationControl.onSliderResize)) {
+						scope.intNavigationControl.onSliderResize(navSlides, currentSlide, element);
+					}	
 			};
 
 			var resetFlags = function() {
 				if(angular.isDefined(scope.intNavigationControl.onAfter)) {
-					scope.intNavigationControl.onAfter();
+					scope.intNavigationControl.onAfter(navSlides, currentSlide, element);
 				}
 				isAnimating = false;
 				endNextPage = false;
@@ -420,6 +424,9 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 
 					eleWidth = element.parent()[0].getBoundingClientRect().width;
 
+					currentSlide = (angular.isDefined(scope.startAt)) ? scope.startAt : 0;
+					
+					newMar = -1 * currentSlide * eleWidth;
 
 					angular.element(element.children()).addClass(classList.pageClass);
 
@@ -431,8 +438,9 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 
 					element.css({
 						'width': (noOfSlides * 200) + '%',
-						'margin-left': '0px'
+						'margin-left': newMar + 'px'
 					});
+
 
 					navSlides.css({
 						'width': eleWidth + 'px'
@@ -443,82 +451,11 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 						navSlides[i].style.cssFloat="left";	
 					}
 
-					resizeSlider();
 
-					angular.element($window).on('resize', function(){
+					angular.element($window).on('resize orientationchange', function(){
 						onResize();
 					});
 
-					scope.moveSlider = function(animatingTo) {
-						var origMar,
-							newMar,
-							oldSlideIndex,
-							animationIndex,
-							eleWidth = element.parent()[0].getBoundingClientRect().width;
-
-						origMar = parseInt(element.css('margin-left'));
-
-						if(transitions && isAnimating) {
-							return;
-						}
-
-						if(currentSlide == noOfSlides -1 && (animatingTo >= noOfSlides -1)) {
-							shakePage();
-							return;
-						}
-						else if(currentSlide == 0 && (animatingTo <= 0)) {
-							shakePage();
-							return;
-						}
-						oldSlideIndex = currentSlide;
-						currentSlide = animatingTo;
-
-						newMar = -1 * currentSlide * eleWidth;
-						navSlides.removeClass(classList.activeClass);
-
-						if(transitions) {
-
-							isAnimating = true;
-
-							if(angular.isDefined(scope.intNavigationControl.onBefore)) {
-								scope.intNavigationControl.onBefore();
-							}
-
-							if(oldSlideIndex < animatingTo) {
-								animationIndex = 13;
-							}
-							else {
-								animationIndex = 14;
-							}
-
-							// var randNumber = getRandomNumber(0, 67);
-							var animationClass = getAnimationClass(animationIndex);
-
-							navSlides.eq(oldSlideIndex).addClass(animationClass.outClass).on(animEndEventName, function(){
-								navSlides.eq(oldSlideIndex).off(animEndEventName).removeClass(animationClass.outClass);
-								endCurrentPage = true;
-								if(endNextPage) {
-									onResize();
-									resetFlags();
-								}
-							});
-
-							navSlides.eq(currentSlide).addClass(classList.activeClass).addClass(animationClass.inClass).on(animEndEventName, function(){
-								navSlides.eq(currentSlide).off(animEndEventName).removeClass(animationClass.inClass);
-								endNextPage = true;
-								if(endCurrentPage) {
-									onResize();
-									resetFlags();
-								}
-							});
-						}
-
-						element.css({
-							'margin-left': newMar + 'px'
-						});
-
-						resizeSlider();
-					};
 
 					if(angular.isDefined(scope.navigationControl)) {
 						scope.intNavigationControl = scope.navigationControl;
@@ -543,14 +480,90 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 							return isAnimating;
 						};
 
+
 					}
 
 					//Called when the navigation slider is initialized
 					if(angular.isDefined(scope.intNavigationControl.onStart)) {
-						scope.intNavigationControl.onStart();
+						scope.intNavigationControl.onStart(navSlides, currentSlide, element);
 					}
 
+					setTimeout(function(){
+						resizeSlider();	
+					}, 100);
+					
+
 				});
+			};
+
+			scope.moveSlider = function(animatingTo) {
+				var origMar,
+					newMar,
+					oldSlideIndex,
+					animationIndex,
+					eleWidth = element.parent()[0].getBoundingClientRect().width;
+
+				origMar = parseInt(element.css('margin-left'));
+
+				if(transitions && isAnimating) {
+					return;
+				}
+
+				if(currentSlide == noOfSlides -1 && (animatingTo >= noOfSlides -1)) {
+					shakePage();
+					return;
+				}
+				else if(currentSlide == 0 && (animatingTo <= 0)) {
+					shakePage();
+					return;
+				}
+				oldSlideIndex = currentSlide;
+				currentSlide = animatingTo;
+
+				newMar = -1 * currentSlide * eleWidth;
+				navSlides.removeClass(classList.activeClass);
+
+				if(transitions) {
+
+					isAnimating = true;
+					if(angular.isDefined(scope.intNavigationControl.onBefore)) {
+						scope.intNavigationControl.onBefore(navSlides, oldSlideIndex, element);
+					}
+
+					if(oldSlideIndex < animatingTo) {
+						animationIndex = 13;
+					}
+					else {
+						animationIndex = 14;
+					}
+
+					// var randNumber = getRandomNumber(0, 67);
+					var animationClass = getAnimationClass(animationIndex);
+
+					navSlides.eq(oldSlideIndex).addClass(animationClass.outClass).on(animEndEventName, function(){
+						navSlides.eq(oldSlideIndex).off(animEndEventName).removeClass(animationClass.outClass);
+						endCurrentPage = true;
+						if(endNextPage) {
+							onResize();
+							resetFlags();
+						}
+					});
+
+					navSlides.eq(currentSlide).addClass(classList.activeClass).addClass(animationClass.inClass).on(animEndEventName, function(){
+						navSlides.eq(currentSlide).off(animEndEventName).removeClass(animationClass.inClass);
+						endNextPage = true;
+						if(endCurrentPage) {
+							onResize();
+							resetFlags();
+						}
+					});
+				}
+
+				element.css({
+					'margin-left': newMar + 'px'
+				});
+
+				resizeSlider();
 			};
 
 			if (scope.initOnLoad) {
