@@ -416,10 +416,12 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 					});
 
 					navSlides.on(animEndEventName, function(data){
-						var animationClass = getAnimationClass(animationIndex);
-						navSlides.removeClass(animationClass.outClass);
-						navSlides.removeClass(animationClass.inClass);
-						resetFlags();
+						if(angular.element(data.target).hasClass(classList.pageClass)) {
+							var animationClass = getAnimationClass(animationIndex);
+							navSlides.removeClass(animationClass.outClass);
+							navSlides.removeClass(animationClass.inClass);
+							resetFlags();
+						}
 					});
 
 					navSlides.css({
