@@ -411,10 +411,6 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 
 					navSlides.eq(currentSlide).addClass(classList.activeClass);
 
-					element.css({
-						'overflow': 'hidden'
-					});
-
 					navSlides.on(animEndEventName, function(data){
 						if(angular.element(data.target).hasClass(classList.pageClass)) {
 							var animationClass = getAnimationClass(animationIndex);

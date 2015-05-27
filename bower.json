@@ -1,6 +1,6 @@
 {
   "name": "angular-navigation",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "homepage": "https://github.com/sathyapulse/angular-navigation",
   "description": "The fully responsive pure angular slider plugin can be used to slide between images and contents",
   "main": "navigation.js",
