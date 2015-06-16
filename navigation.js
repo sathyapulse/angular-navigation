@@ -375,7 +375,7 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 			var resetFlags = function() {
 
 				if(angular.isDefined(scope.intNavigationControl.onAfter)) {
-					scope.intNavigationControl.onAfter(navSlides, currentSlide, element);
+					scope.intNavigationControl.onAfter(navSlides, currentSlide, element, previousSlide);
 				}
 
 				isAnimating = false;
@@ -493,7 +493,7 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 
 					isAnimating = true;
 					if(angular.isDefined(scope.intNavigationControl.onBefore)) {
-						scope.intNavigationControl.onBefore(navSlides, previousSlide, element);
+						scope.intNavigationControl.onBefore(navSlides, previousSlide, element, animatingTo);
 					}
 
 					if(previousSlide < animatingTo) {
