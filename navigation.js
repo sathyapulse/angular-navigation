@@ -376,6 +376,7 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 
 				if(angular.isDefined(scope.intNavigationControl.onAfter)) {
 					scope.intNavigationControl.onAfter(navSlides, currentSlide, element, previousSlide);
+					scope.intNavigationControl.currentSlide = currentSlide;
 				}
 
 				isAnimating = false;
@@ -430,6 +431,8 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 
 					if(angular.isDefined(scope.navigationControl)) {
 						scope.intNavigationControl = scope.navigationControl;
+
+						scope.intNavigationControl.currentSlide = currentSlide;
 
 						scope.intNavigationControl.next = function() {
 							scope.moveSlider((currentSlide + 1));
