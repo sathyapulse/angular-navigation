@@ -18,6 +18,7 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 				eleWidth = 0,
 				currentSlide = 0,
 				previousSlide = 0,
+				isLast = false,
 				isAnimating = false,
 				shakeOnEnd = true,
 				pfx,
@@ -374,6 +375,10 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 
 			var resetFlags = function() {
 
+				isLast = (noOfSlides == (currentSlide + 1)) ? true : false;
+
+				scope.intNavigationControl.isLast = isLast;
+
 				if(angular.isDefined(scope.intNavigationControl.onAfter)) {
 					scope.intNavigationControl.onAfter(navSlides, currentSlide, element, previousSlide);
 					scope.intNavigationControl.currentSlide = currentSlide;
@@ -454,7 +459,9 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 							return isAnimating;
 						};
 
+						isLast = (noOfSlides == (currentSlide + 1)) ? true : false;
 
+						scope.intNavigationControl.isLast = isLast;
 					}
 
 					//Called when the navigation slider is initialized
