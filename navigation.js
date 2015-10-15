@@ -438,6 +438,7 @@ angular.module('navSlider').directive('navSliderDir', ['$window', '$document', '
 						scope.intNavigationControl = scope.navigationControl;
 
 						scope.intNavigationControl.currentSlide = currentSlide;
+						scope.intNavigationControl.totalSlides = noOfSlides;
 
 						scope.intNavigationControl.next = function() {
 							scope.moveSlider((currentSlide + 1));
